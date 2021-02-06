@@ -222,3 +222,39 @@ class Schedule():
 							count += 1
 				weekly_schedule[weekdays[day]] = schedule.copy()
 			return weekly_schedule if count else {}
+
+	# Получить расписание сессии по дате
+	def get_schedule_session_by_date(self, date: datetime.datetime):
+		rasp_json = self.get_schedule_json(True)
+		schedule = []
+
+		if rasp_json['status'] == 'error':
+			return None
+		elif rasp_json['status'] == 'ok':
+			if date.strftime("%Y-%m-%d") not in rasp_json['grid']:
+				return None
+			for key, value in rasp_json['grid'][date.strftime("%Y-%m-%d")].items():
+				if not len(value):
+					continue
+				for lesson in value:		
+					lesson['time_schedule'] = time_schedule[int(key)]
+					schedule.append(Lesson(lesson))
+			return schedule
+	# Получить расписание всей сессии
+	def get_schedule_session(self):
+		rasp_json = self.get_schedule_json(True)
+		session_schedule = {}
+
+		if rasp_json['status'] == 'error':
+			return None
+		elif rasp_json['status'] == 'ok':
+			for date in rasp_json['grid']:
+				schedule = []
+				for key, value in rasp_json['grid'][date].items():
+					if not len(value):
+						continue
+					for lesson in value:
+						lesson['time_schedule'] = time_schedule[int(key)]
+						schedule.append(Lesson(lesson))
+				session_schedule[date] = schedule.copy()
+			return session_schedule
