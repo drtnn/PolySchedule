@@ -30,6 +30,21 @@ weekdays = {
 # Часовой пояс – "Москва"
 MOSCOW = pytz.timezone('Europe/Moscow')
 
+# Хэдеры POST-запроса
+headers = {
+    'authority': 'rasp.dmami.ru',
+    'pragma': 'no-cache',
+    'cache-control': 'no-cache',
+    'accept': '*/*',
+    'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36',
+    'x-requested-with': 'XMLHttpRequest',
+    'sec-fetch-site': 'same-origin',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-dest': 'empty',
+    'referer': 'https://rasp.dmami.ru/',
+    'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+}
+
 # Класс "Пара"
 class Lesson():
 
@@ -73,20 +88,6 @@ class Schedule():
     def get_schedule_json(self, session):
         session = 0 if not session else 1
         url = f'https://rasp.dmami.ru/site/group?group={self.group}&session={session}'
-        headers = {
-            'authority': 'rasp.dmami.ru',
-            'pragma': 'no-cache',
-            'cache-control': 'no-cache',
-            'accept': '*/*',
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36',
-            'x-requested-with': 'XMLHttpRequest',
-            'sec-fetch-site': 'same-origin',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-dest': 'empty',
-            'referer': 'https://rasp.dmami.ru/',
-            'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
-            'cookie': '_ym_uid=15749743621061641749; _ym_d=1604048375; _ym_isad=1; group=181-722',
-        }
         r = requests.post(url=url, headers=headers)
         return r.json()
 
@@ -116,8 +117,7 @@ class Schedule():
         rasp_json = self.get_schedule_json(session)
         schedule = []
         day = datetime.datetime.now(
-            datetime.timezone.utc).astimezone(MOSCOW).weekday()
-
+            datetime.timezone.utc).astimezone(MOSCOW).weekday() + 1
         if rasp_json['status'] == 'error':
             return None
         elif rasp_json['status'] == 'ok':
@@ -158,20 +158,6 @@ class Schedule():
     # Получить список всех групп
     def get_groups(self):
         url = 'https://rasp.dmami.ru/groups-list.json'
-        headers = {
-            'authority': 'rasp.dmami.ru',
-            'pragma': 'no-cache',
-            'cache-control': 'no-cache',
-            'accept': 'application/json, text/javascript, */*; q=0.01',
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36',
-            'x-requested-with': 'XMLHttpRequest',
-            'sec-fetch-site': 'same-origin',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-dest': 'empty',
-            'referer': 'https://rasp.dmami.ru/',
-            'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
-            'cookie': '_ym_uid=15749743621061641749; _ym_d=1604048375; _ym_isad=1; group=181-722',
-        }
         r = requests.post(url=url, headers=headers)
         return r.json()['groups']
 
