@@ -89,7 +89,7 @@ class Schedule():
         session = 0 if not session else 1
         url = f'https://rasp.dmami.ru/site/group?group={self.group}&session={session}'
         r = requests.post(url=url, headers=headers)
-        return r.json()
+        return r.json() if r.status_code == 200 else { 'status' : 'error' }
 
     # Получить расписание на день текущей недели
     def get_schedule_by_weekday(self, day: int, session=False):
@@ -159,7 +159,7 @@ class Schedule():
     def get_groups(self):
         url = 'https://rasp.dmami.ru/groups-list.json'
         r = requests.post(url=url, headers=headers)
-        return r.json()['groups']
+        return r.json()['groups'] if r.status_code == 200 else { 'status' : 'error' }
 
     # Группа существует?
     def group_exists(self):
